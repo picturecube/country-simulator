@@ -1,14 +1,11 @@
 import p5 from 'p5';
 import SimMap from './src/SimMap.ts'
-import jquery from 'jquery';
+import $ from 'jquery';
 const l /*land*/ = "255, 255, 255";
 const w /*water*/ = "0, 0, 255";
 const wakanda  = "0, 255, 0";
 const panem = "255, 255, 0";
-const $ = new jquery();
 let simMap: SimMap;
-
-
 
 function sketch(p: p5) {
     p.setup = () => {
@@ -32,3 +29,5 @@ function sketch(p: p5) {
 };
 
 new p5(sketch);
+
+$('body').append('<button onclick="window.location.reload()">Reset</button>')
