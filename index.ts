@@ -18,6 +18,13 @@ function sketch(p: p5) {
         simMap.createMap(p);
         console.log('doing p5 setup');
         p.frameRate(60);
+        $('main:has(.p5Canvas)').append('<div id="buttonsContainer"></div>');
+        
+        // reset button
+        let resetButton = p.createButton('Reset').class('resetButton').mousePressed(() => {
+            window.location.reload();
+        });
+        $('#buttonsContainer').append($('.resetButton'));
     };
 
     p.draw = () => {
@@ -40,6 +47,3 @@ function sketch(p: p5) {
 };
 
 new p5(sketch);
-
-// reset button
-$('body').append('<button onclick="window.location.reload()">Reset</button>')
