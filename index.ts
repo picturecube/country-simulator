@@ -11,7 +11,8 @@ const panem = "255, 255, 0";
 
 function sketch(p: p5) {
     p.setup = () => {
-        p.createCanvas(900, 900);
+        p.createCanvas(900, 900, p.WEBGL);
+        p.translate(-450, -450)
         let simMap = new SimMap(w, l, wakanda, panem);
         simMap.createMap(p);
         console.log('doing p5 setup')
