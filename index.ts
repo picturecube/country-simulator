@@ -1,29 +1,29 @@
 import p5 from 'p5';
 import SimMap from './src/SimMap.ts'
 import $ from 'jquery';
+import processMouse from './src/processMouse.ts';
 
 const l /*land*/ = "255, 255, 255";
 const w /*water*/ = "0, 0, 255";
-// wakanda forever
-// rip chadwick boseman
 const cindercrest  = "255, 0, 0";
-// get ready for the 76th hunger games
+// King: Saparata
 const nullEmpire = "0, 0, 0";
+// King: SpokeIsHere
 let simMap: SimMap;
 let materialSymbolsRounded: p5.Font;
 let testFontCOURIERPRIME: p5.Font;
+let testFontCOURIERPRIMEBold: p5.Font;
 let domainIcon: p5.Image;
 
 function sketch(p: p5) {
      p.setup = async () => {
         p.createCanvas(900, 900, p.WEBGL);
-        p.background(255, 255, 255);
         simMap = new SimMap(w, l, cindercrest, nullEmpire, p);
         simMap.createMap(p);
         console.log('doing p5 setup');
         p.frameRate(60);
-        materialSymbolsRounded = await p.loadFont("./fonts/MaterialIconsRound-Regular.otf");
-        testFontCOURIERPRIME =  await p.loadFont('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap')
+        testFontCOURIERPRIME = await p.loadFont('./fonts/Courier Prime.ttf');
+        testFontCOURIERPRIMEBold = await p.loadFont('./fonts/Courier Prime Bold.ttf');
         domainIcon = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/src/social/domain/materialiconsround/24px.svg');
         domainIcon.width = 24;
         domainIcon.height = 24;
@@ -40,17 +40,23 @@ function sketch(p: p5) {
     };
 
     p.draw = () => {
+        p.background(255, 255, 255);
         // move origin to corner because webgl origin is center
         p.translate(-0.5 * p.width, -0.5 * p.height);
+        
+        // draw each pixel
+        for (let row = 0; row < simMap.mapData.length; row++) {
+            for (let col = 0; col < simMap.mapData[row].length; col++) {
+                simMap.pixels[row][col].draw(p);
+            };
+        };
+
+        simMap.drawFeatureSymbols(p);
+
+        processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
+
         // since the frame rate is 60, eack tick is half a second
         if (p.frameCount % 30 === 2) {
-            // draw each pixel
-            for (let row = 0; row < simMap.mapData.length; row++) {
-                for (let col = 0; col < simMap.mapData[row].length; col++) {
-                    simMap.pixels[row][col].draw(p);
-                };
-            };
-
             simMap.update(p);
             console.log('cindercrest available px', simMap.cindercrest.available);
             console.log('nullEmpire available px', simMap.nullEmpire.available);

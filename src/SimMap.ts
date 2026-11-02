@@ -119,6 +119,10 @@ class SimMap {
         this.nullEmpire.resources -= nullEmpireUsableResources;
         this.nullEmpire.resources += p.floor(4 * nullEmpireUsableResources / 3);
         
+        
+    };
+
+    drawFeatureSymbols(p: p5) {
         // add symbol for each feature
         console.log(this.featureMatrix);
         for (let row = 0; row < this.featureMatrix.length; row++) {
