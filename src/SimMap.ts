@@ -27,9 +27,9 @@ class SimMap {
     featureMatrix: string[][] = [['', '', '', '', '', '', '', '', ''], 
                                  ['', '', '', '', '', '', '', '', ''], 
                                  ['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
+                                 ['', 'arable', '', '', '', '', '', 'arable', ''], 
+                                 ['', 'arable', '', '', '', '', '', 'arable', ''], 
+                                 ['', 'arable', '', '', '', '', '', 'arable', ''], 
                                  ['', '', '', '', '', '', '', '', ''], 
                                  ['', '', '', '', '', '', '', '', ''], 
                                  ['', '', '', '', '', '', '', '', '']];
@@ -37,7 +37,8 @@ class SimMap {
     featureMap: Record<string, p5.Image> = {};
 
     async fillFeatureMap(p: p5) {
-        this.featureMap.city = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/src/social/domain/materialiconsround/24px.svg');
+        this.featureMap.city = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/domain/materialsymbolsrounded/domain_48px.svg');
+        this.featureMap.arable = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/agriculture/materialsymbolsrounded/agriculture_48px.svg')
     };
 
     constructor(w: string, l: string, cindercrest: string, nullEmpire: string, p: p5) {
@@ -62,7 +63,7 @@ class SimMap {
         // create a pixel object for each pixel
         for (let row = 0; row < this.mapData.length; row++) {
             for (let col = 0; col < this.mapData[row].length; col++) {
-                let feature = '';
+                let feature = this.featureMatrix[row][col];
                 if (typeof(this.mapData[row][col]) === 'object') {
                     feature = 'city';
                 };
