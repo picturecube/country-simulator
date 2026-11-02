@@ -34,12 +34,13 @@ class SimMap {
                                  ['', '', '', '', '', '', '', '', ''], 
                                  ['', '', '', '', '', '', '', '', '']];
     // this object maps the feature to the material symbol that will be drawn on the map
-    featureMap: Record < string, string > = {
-        city: 'domain',
-        '': ''
+    featureMap: Record<string, p5.Image> = {};
+
+    async fillFeatureMap(p: p5) {
+        this.featureMap.city = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/src/social/domain/materialiconsround/24px.svg');
     };
 
-    constructor(w: string, l: string, cindercrest: string, nullEmpire: string) {
+    constructor(w: string, l: string, cindercrest: string, nullEmpire: string, p: p5) {
         this.mapData = [[w,       w, w, w, l, w, w, w,     w],
                         [w,       w, w, l, l, l, w, w,     w],
                         [w,       w, l, l, l, l, l, w,     w],
@@ -51,6 +52,8 @@ class SimMap {
                         [w,       w, w, w, l, w, w, w,     w]];
         this.cindercrest.color = cindercrest
         this.nullEmpire.color = nullEmpire
+
+        this.fillFeatureMap(p);
     };
 
     createMap(p: p5) {
@@ -92,7 +95,7 @@ class SimMap {
         };
     };
 
-    update(p: p5, materialSymbolsRounded: p5.Font) {
+    update(p: p5) {
         this.findAvailable(this.cindercrest, p);
         this.findAvailable(this.nullEmpire, p);
         // each tick, each country will only use about a third of its resources, rounded down, and won't "mobilize" more resources than available land
@@ -117,12 +120,29 @@ class SimMap {
         
         // add symbol for each feature
         console.log(this.featureMatrix);
-        p.textFont(materialSymbolsRounded);
-        p.fill(0);
         for (let row = 0; row < this.featureMatrix.length; row++) {
             for (let col = 0; col < this.featureMatrix[row].length; col++) {
-                p.text(this.featureMap[this.featureMatrix[row][col]], row * this.size, col * this.size);
-                console.log(`added symbol ${this.featureMap[this.featureMatrix[row][col]]} at ${row} ${col}`);
+                const feature = this.featureMatrix[row][col];
+                if (!feature) continue;
+
+                const img = this.featureMap[feature];
+                if (!img) continue;
+
+                img.loadPixels();
+                for (let x = 0; x < img.width; x++) {
+                    for (let y = 0; y < img.height; y++) {
+                        const index = (x + y * img.width) * 4;
+                        const alpha = img.pixels[index + 3];
+                        if (alpha > 0) {
+                            img.pixels[index] = 255;
+                            img.pixels[index + 1] = 255;
+                            img.pixels[index + 2] = 255;
+                        };
+                    };
+                };
+                img.updatePixels();
+
+                p.image(img, col * this.size, row * this.size, this.size, this.size);
             };
         };
     };

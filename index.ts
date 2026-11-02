@@ -1,27 +1,34 @@
 import p5 from 'p5';
 import SimMap from './src/SimMap.ts'
 import $ from 'jquery';
+
 const l /*land*/ = "255, 255, 255";
 const w /*water*/ = "0, 0, 255";
 // wakanda forever
 // rip chadwick boseman
-const cindercrest  = "0, 255, 0";
+const cindercrest  = "255, 0, 0";
 // get ready for the 76th hunger games
-const nullEmpire = "255, 255, 0";
+const nullEmpire = "0, 0, 0";
 let simMap: SimMap;
 let materialSymbolsRounded: p5.Font;
 let testFontCOURIERPRIME: p5.Font;
+let domainIcon: p5.Image;
 
 function sketch(p: p5) {
      p.setup = async () => {
         p.createCanvas(900, 900, p.WEBGL);
         p.background(255, 255, 255);
-        simMap = new SimMap(w, l, cindercrest, nullEmpire);
+        simMap = new SimMap(w, l, cindercrest, nullEmpire, p);
         simMap.createMap(p);
         console.log('doing p5 setup');
         p.frameRate(60);
         materialSymbolsRounded = await p.loadFont("./fonts/MaterialIconsRound-Regular.otf");
         testFontCOURIERPRIME =  await p.loadFont('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap')
+        domainIcon = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/src/social/domain/materialiconsround/24px.svg');
+        domainIcon.width = 24;
+        domainIcon.height = 24;
+        console.log(domainIcon.width, domainIcon.height);
+
         $('main:has(.p5Canvas)').append('<div id="buttonsContainer"></div>');
         $('main:has(.p5Canvas)').prepend('<div id="canvasContainer"></div>');
         $('#canvasContainer').append($('.p5Canvas'));
@@ -44,7 +51,7 @@ function sketch(p: p5) {
                 };
             };
 
-            simMap.update(p, materialSymbolsRounded);
+            simMap.update(p);
             console.log('cindercrest available px', simMap.cindercrest.available);
             console.log('nullEmpire available px', simMap.nullEmpire.available);
         };
