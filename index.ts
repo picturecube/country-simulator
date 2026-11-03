@@ -2,13 +2,23 @@ import p5 from 'p5';
 import SimMap from './src/SimMap.ts'
 import $ from 'jquery';
 import processMouse from './src/processMouse.ts';
+import Country from './src/Country.ts';
 
 const l /*land*/ = "255, 255, 255";
 const w /*water*/ = "0, 0, 255";
-const cindercrest  = "255, 0, 0";
+const cindercrest  = new Country("Cindercrest", "255, 0, 0");
 // King: Saparata
-const nullEmpire = "0, 0, 0";
+const nullEmpire = new Country("Null Empire", "0, 0, 0");
 // King: SpokeIsHere
+const mapData = [[w,       w, w, w, l, w, w, w,     w],
+                        [w,       w, w, l, l, l, w, w,     w],
+                        [w,       w, l, l, l, l, l, w,     w],
+                        [w,       l, l, l, l, l, l, l,     w],
+                        [cindercrest, l, l, l, l, l, l, l, nullEmpire],
+                        [w,       l, l, l, l, l, l, l,     w],
+                        [w,       w, l, l, l, l, l, w,     w],
+                        [w,       w, w, l, l, l, w, w,     w],
+                        [w,       w, w, w, l, w, w, w,     w]];
 let simMap: SimMap;
 let materialSymbolsRounded: p5.Font;
 let testFontCOURIERPRIME: p5.Font;
@@ -18,7 +28,7 @@ let domainIcon: p5.Image;
 function sketch(p: p5) {
      p.setup = async () => {
         p.createCanvas(900, 900, p.WEBGL);
-        simMap = new SimMap(w, l, cindercrest, nullEmpire, p);
+        simMap = new SimMap(w, l, mapData, p);
         simMap.createMap(p);
         console.log('doing p5 setup');
         p.frameRate(60);
@@ -33,9 +43,10 @@ function sketch(p: p5) {
         $('main:has(.p5Canvas)').prepend('<div id="canvasContainer"></div>');
         $('#canvasContainer').append($('.p5Canvas'));
         // reset button
-        let resetButton = p.createButton('Reset').class('resetButton').mousePressed(() => {
+        const resetButton = p.createButton('Reset').class('resetButton').mousePressed(() => {
             window.location.reload();
         });
+
         $('#buttonsContainer').append($('.resetButton'));
     };
 
@@ -57,9 +68,10 @@ function sketch(p: p5) {
 
         // since the frame rate is 60, eack tick is half a second
         if (p.frameCount % 30 === 2) {
-            simMap.update(p);
-            console.log('cindercrest available px', simMap.cindercrest.available);
-            console.log('nullEmpire available px', simMap.nullEmpire.available);
+            simMap.update(p, cindercrest);
+            simMap.update(p, nullEmpire);
+            console.log('cindercrest available px', cindercrest.available);
+            console.log('nullEmpire available px', nullEmpire.available);
         };
     };
 };

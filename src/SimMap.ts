@@ -1,5 +1,6 @@
 import p5 from 'p5';
 import MapPixel from './MapPixel.ts'
+import Country from './Country.ts';
 class SimMap {
     // the map is a 9x9 grid of pixels, each pixel is 100x100 px
     // the data is either the color or a country object with a color property
@@ -12,16 +13,6 @@ class SimMap {
     // and will gain 4/3 of the resources it used, rounded down
     // Available: an array of all the pixels that are adjacent to a country's pixels and are free land,
     // so that the country can conquer them in the next tick
-    cindercrest = {
-        resources: 10,
-        color: '',
-        available: [] as number[][]
-    };
-    nullEmpire = {
-        resources: 10,
-        color: '',
-        available: [] as number [][]
-    };
     // this array has the feature, if any, of each pixel
     // A feature includes anything of strategic value, like a city or a farm
     featureMatrix: string[][] = [['', '', '', '', '', '', '', '', ''], 
@@ -41,18 +32,8 @@ class SimMap {
         this.featureMap.arable = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/agriculture/materialsymbolsrounded/agriculture_48px.svg')
     };
 
-    constructor(w: string, l: string, cindercrest: string, nullEmpire: string, p: p5) {
-        this.mapData = [[w,       w, w, w, l, w, w, w,     w],
-                        [w,       w, w, l, l, l, w, w,     w],
-                        [w,       w, l, l, l, l, l, w,     w],
-                        [w,       l, l, l, l, l, l, l,     w],
-                        [this.cindercrest, l, l, l, l, l, l, l, this.nullEmpire],
-                        [w,       l, l, l, l, l, l, l,     w],
-                        [w,       w, l, l, l, l, l, w,     w],
-                        [w,       w, w, l, l, l, w, w,     w],
-                        [w,       w, w, w, l, w, w, w,     w]];
-        this.cindercrest.color = cindercrest
-        this.nullEmpire.color = nullEmpire
+    constructor(w: string, l: string, mapData: (string | Country)[][] , p: p5) {
+        this.mapData = mapData;
 
         this.fillFeatureMap(p);
     };
@@ -96,60 +77,34 @@ class SimMap {
         };
     };
 
-    update(p: p5) {
-        this.findAvailable(this.cindercrest, p);
-        this.findAvailable(this.nullEmpire, p);
+    update(p: p5, country: Country) {
+        this.findAvailable(country, p);
         // each tick, each country will only use about a third of its resources, rounded down, and won't "mobilize" more resources than available land
-        let cindercrestUsableResources: number = p.constrain(p.floor(this.cindercrest.resources / 3), 0, this.cindercrest.available.length);
+        let usableResources: number = p.constrain(p.floor(country.resources / 3), 0, country.available.length);
         // conquer a random pixel of available land (later i will add strategic assets)
-        if (cindercrestUsableResources > 0) {
-            for (let rsrc = 0; rsrc < cindercrestUsableResources; rsrc++) {
-                let conquerablePixel = p.random(this.cindercrest.available);
-                this.pixels[conquerablePixel[0]][conquerablePixel[1]].type = this.cindercrest.color;
+        if (usableResources > 0) {
+            for (let rsrc = 0; rsrc < usableResources; rsrc++) {
+                let conquerablePixel = p.random(country.available);
+                this.pixels[conquerablePixel[0]][conquerablePixel[1]].type = country.color;
             };
         } else {
             // or if there are at least 5 resources and available land, build a city
-            cindercrestUsableResources = p.max(p.floor(this.cindercrest.resources / 3), 0);
-            if (cindercrestUsableResources > 5 && this.pixels.some(row => row.some(pixel => pixel.type === this.cindercrest.color && pixel.feature === ''))) {
+            usableResources = p.max(p.floor(country.resources / 3), 0);
+            if (usableResources > 5 && this.pixels.some(row => row.some(pixel => pixel.type === country.color && pixel.feature === ''))) {
                 let featurePixel = [p.floor(p.random(this.pixels.length)), 0];
                 console.log(featurePixel, this.pixels[featurePixel[0]])
                 featurePixel[1] = p.floor(p.random(this.pixels[featurePixel[0]].length));
-                while (this.pixels[featurePixel[0]][featurePixel[1]].type !== this.cindercrest.color || this.pixels[featurePixel[0]][featurePixel[1]].feature !== '') {
+                while (this.pixels[featurePixel[0]][featurePixel[1]].type !== country.color || this.pixels[featurePixel[0]][featurePixel[1]].feature !== '') {
                     featurePixel = [p.floor(p.random(this.pixels.length)), p.floor(p.random(this.pixels[0].length))];
                 }
                 this.pixels[featurePixel[0]][featurePixel[1]].feature = p.random(['city', 'arable']);
                 this.featureMatrix[featurePixel[0]][featurePixel[1]] = this.pixels[featurePixel[0]][featurePixel[1]].feature;
-                this.cindercrest.resources -= cindercrestUsableResources;
+                country.resources -= usableResources;
             };
         };
         // add 4/3 of the resources it just used because that makes sense (when i add more factors like economy this factor will change)
-        this.cindercrest.resources -= cindercrestUsableResources;
-        this.cindercrest.resources += p.floor(4 * cindercrestUsableResources / 3);
-
-        // repeat for null
-        let nullEmpireUsableResources: number = p.constrain(p.floor(this.nullEmpire.resources / 3), 0, this.nullEmpire.available.length);
-        if (nullEmpireUsableResources > 0) {
-            for (let rsrc = 0; rsrc < nullEmpireUsableResources; rsrc++) {
-                let conquerablePixel = p.random(this.nullEmpire.available);
-                this.pixels[conquerablePixel[0]][conquerablePixel[1]].type = this.nullEmpire.color;
-            };
-        } else {
-            // or if there are at least 5 resources and available land, build a city
-            nullEmpireUsableResources = p.max(p.floor(this.nullEmpire.resources / 3), 0);
-            if (nullEmpireUsableResources > 5 && this.pixels.some(row => row.some(pixel => pixel.type === this.nullEmpire.color && pixel.feature === ''))) {
-                let featurePixel = [p.floor(p.random(this.pixels.length)), 0];
-                console.log(featurePixel, this.pixels[featurePixel[0]])
-                featurePixel[1] = p.floor(p.random(this.pixels[featurePixel[0]].length));
-                while (this.pixels[featurePixel[0]][featurePixel[1]].type !== this.nullEmpire.color || this.pixels[featurePixel[0]][featurePixel[1]].feature !== '') {
-                    featurePixel = [p.floor(p.random(this.pixels.length)), p.floor(p.random(this.pixels[0].length))];
-                }
-                this.pixels[featurePixel[0]][featurePixel[1]].feature = p.random(['city', 'arable']);
-                this.featureMatrix[featurePixel[0]][featurePixel[1]] = this.pixels[featurePixel[0]][featurePixel[1]].feature;
-                this.nullEmpire.resources -= nullEmpireUsableResources;
-            };
-        };
-        this.nullEmpire.resources -= nullEmpireUsableResources;
-        this.nullEmpire.resources += p.floor(4 * nullEmpireUsableResources / 3);
+        country.resources -= usableResources;
+        country.resources += p.floor(4 * usableResources / 3);
         
         
     };
