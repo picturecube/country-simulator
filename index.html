@@ -7,9 +7,12 @@
         <style>
             body {
                 background-color: #0d1117;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
             }
 
-            .resetButton {
+            .controlButtons {
                 background-color: #0d1117;
                 color: #f8fafc;
                 border-color: #f8fafc;
@@ -19,11 +22,11 @@
                 font-family: 'Courier New', Courier, monospace;
             }
 
-            .resetButton:hover {
+            .controlButtons:hover {
                 background-color: #242a33;
             }
 
-            .resetButton:active {
+            .controlButtons:active {
                 background-color: #0d1117;
             }
 
@@ -33,6 +36,8 @@
 
             #buttonsContainer {
                 display: flex;
+                flex-direction: column;
+                gap: 1rem;
             }
         </style>
         <title>Country Simulator</title>

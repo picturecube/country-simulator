@@ -12,6 +12,8 @@ let materialSymbolsRounded: p5.Font;
 let testFontCOURIERPRIME: p5.Font;
 let testFontCOURIERPRIMEBold: p5.Font;
 let domainIcon: p5.Image;
+let isPaused = false;
+let fs = false;
 
 function sketch(p: p5) {
      p.setup = async () => {
@@ -29,13 +31,54 @@ function sketch(p: p5) {
 
         $('main:has(.p5Canvas)').append('<div id="buttonsContainer"></div>');
         $('main:has(.p5Canvas)').prepend('<div id="canvasContainer"></div>');
-        $('#canvasContainer').append($('.p5Canvas'));
+        $('#canvasContainer').append($('.p5Canvas')).css({height: '980px'});
         // reset button
-        const resetButton = p.createButton('Reset').class('resetButton').mousePressed(() => {
+        const resetButton = p.createButton('Reset').class('resetButton controlButtons').mousePressed(() => {
             window.location.reload();
         });
-
+        // pause button
+        const pauseButton = p.createButton('Pause').class('pauseButton controlButtons').mousePressed(() => {
+            isPaused = !isPaused;
+        });
+        // fullscreen button
+        const fullscreenButton = p.createButton('Fullscreen').class('fullscreenButton controlButtons').mousePressed(() => {
+            if (fs === false) {
+                $('main').css({
+                    width: '90vw',
+                    height: '100vh',
+                    objectFit: 'contain'
+                });
+                $('canvas').css({
+                    height: '100vh',
+                    width: '100vh',
+                    objectFit: 'contain'
+                });
+                $('#canvasContainer').css({
+                    height: '100vh'
+                });
+                fs = true;
+                $('main')[0].requestFullscreen();
+            } else if (fs === true) {
+                $('main').css({
+                    width: '',
+                    height: '',
+                    objectFit: ''
+                });
+                $('canvas').css({
+                    height: '',
+                    width: '',
+                    objectFit: ''
+                });
+                $('#canvasContainer').css({
+                    height: '980px'
+                });
+                fs = false;
+                document.exitFullscreen();
+            }
+        });
         $('#buttonsContainer').append($('.resetButton'));
+        $('#buttonsContainer').append($('.pauseButton'));
+        $('#buttonsContainer').append($('.fullscreenButton'));
     };
 
     p.draw = () => {
@@ -54,15 +97,15 @@ function sketch(p: p5) {
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
 
-        // since the frame rate is 30, each tick is half a second
-        //if (p.frameCount % 15 === 0) {
+        // game logic
+        if (!isPaused) {
             simMap.update(p, cindercrest);
             simMap.update(p, nullEmpire);
             simMap.update(p, parrotCiv);
             simMap.update(p, law);
             simMap.update(p, nether);
             console.log(cindercrest, nullEmpire, parrotCiv, law, nether);
-        //};
+        };
     };
 };
 
