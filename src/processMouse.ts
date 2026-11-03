@@ -7,7 +7,7 @@ function processMouse(p: p5, simMap: SimMap, font: p5.Font, bold: p5.Font) {
     console.log(`pixel hovered: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature}`);
     p.textFont(font);
     p.textSize(12);
-    p.fill(255, 255, 255);
+    p.fill(0, 0, 0);
     // add tooltip and cool colored country names
     if (pixelHovered.type === '255, 0, 0') {
         p.text(`Cindercrest pixel: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature === '' ? 'No feature' : pixelHovered.feature}`, 10, 20);
@@ -23,6 +23,21 @@ function processMouse(p: p5, simMap: SimMap, font: p5.Font, bold: p5.Font) {
         p.text(`Land pixel: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature === '' ? 'No feature' : pixelHovered.feature}`, 10, 20);
     } else if (pixelHovered.type === '0, 0, 255') {
         p.text(`Water pixel: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature === '' ? 'No feature' : pixelHovered.feature}`, 10, 20);
-    };
+    } else if (pixelHovered.type === '255, 255, 0') {
+        p.text(`Parrot Civ pixel: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature === '' ? 'No feature' : pixelHovered.feature}`, 10, 20);
+        p.fill(255, 255, 0);
+        p.textFont(bold);
+        p.text('Parrot Civ', 10, 20);
+    } else if (pixelHovered.type === '0, 255, 0') {
+        p.text(`LAW pixel: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature === '' ? 'No feature' : pixelHovered.feature}`, 10, 20);
+        p.fill(0, 255, 0);
+        p.textFont(bold);
+        p.text('LAW', 10, 20);
+    } else if (pixelHovered.type === '255, 165, 0') {
+        p.text(`Nether pixel: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature === '' ? 'No feature' : pixelHovered.feature}`, 10, 20);
+        p.fill(255, 165, 0);
+        p.textFont(bold);
+        p.text('Nether', 10, 20);
+    }
 };
 export default processMouse;

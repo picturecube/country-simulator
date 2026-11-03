@@ -2,23 +2,11 @@ import p5 from 'p5';
 import SimMap from './src/SimMap.ts'
 import $ from 'jquery';
 import processMouse from './src/processMouse.ts';
-import Country from './src/Country.ts';
+import mapData from './src/mapData.ts';
+import { cindercrest, nullEmpire, parrotCiv, law, nether, l, w } from './src/colorData.ts';
 
-const l /*land*/ = "255, 255, 255";
-const w /*water*/ = "0, 0, 255";
-const cindercrest  = new Country("Cindercrest", "255, 0, 0");
-// King: Saparata
-const nullEmpire = new Country("Null Empire", "0, 0, 0");
-// King: SpokeIsHere
-const mapData = [[w,       w, w, w, l, w, w, w,     w],
-                        [w,       w, w, l, l, l, w, w,     w],
-                        [w,       w, l, l, l, l, l, w,     w],
-                        [w,       l, l, l, l, l, l, l,     w],
-                        [cindercrest, l, l, l, l, l, l, l, nullEmpire],
-                        [w,       l, l, l, l, l, l, l,     w],
-                        [w,       w, l, l, l, l, l, w,     w],
-                        [w,       w, w, l, l, l, w, w,     w],
-                        [w,       w, w, w, l, w, w, w,     w]];
+const startingMapData = mapData;
+console.log(startingMapData);
 let simMap: SimMap;
 let materialSymbolsRounded: p5.Font;
 let testFontCOURIERPRIME: p5.Font;
@@ -27,11 +15,11 @@ let domainIcon: p5.Image;
 
 function sketch(p: p5) {
      p.setup = async () => {
-        p.createCanvas(900, 900, p.WEBGL);
-        simMap = new SimMap(w, l, mapData, p);
+        p.createCanvas(980, 980, p.WEBGL);
+        simMap = new SimMap(w, l, startingMapData, p);
         simMap.createMap(p);
         console.log('doing p5 setup');
-        p.frameRate(60);
+        p.frameRate(30);
         testFontCOURIERPRIME = await p.loadFont('./fonts/Courier Prime.ttf');
         testFontCOURIERPRIMEBold = await p.loadFont('./fonts/Courier Prime Bold.ttf');
         domainIcon = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/src/social/domain/materialiconsround/24px.svg');
@@ -66,14 +54,17 @@ function sketch(p: p5) {
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
 
-        // since the frame rate is 60, eack tick is half a second
-        if (p.frameCount % 30 === 2) {
+        // since the frame rate is 30, each tick is half a second
+        //if (p.frameCount % 15 === 0) {
             simMap.update(p, cindercrest);
             simMap.update(p, nullEmpire);
-            console.log('cindercrest available px', cindercrest.available);
-            console.log('nullEmpire available px', nullEmpire.available);
-        };
+            simMap.update(p, parrotCiv);
+            simMap.update(p, law);
+            simMap.update(p, nether);
+            console.log(cindercrest, nullEmpire, parrotCiv, law, nether);
+        //};
     };
 };
 
 new p5(sketch);
+export { cindercrest, nullEmpire, parrotCiv, law, nether, l, w };

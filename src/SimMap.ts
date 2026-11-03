@@ -5,9 +5,12 @@ class SimMap {
     // the map is a 9x9 grid of pixels, each pixel is 100x100 px
     // the data is either the color or a country object with a color property
     mapData: ( string | { color: string } )[][];
-    size = 100;
+
+    /**/
+
+    size = 20;
     // the pixel objects are stored in a separate array because they are for displaying the map only
-    pixels: MapPixel[][] = [[], [], [], [], [], [], [], [], []];
+    pixels: MapPixel[][] = Array.from({ length: 49 }, () => Array(49).fill(null));
     // Resources: each pixel conquered consumes 1 resource, 
     // and each tick each country will use 1/3 of the resources it has, rounded down, 
     // and will gain 4/3 of the resources it used, rounded down
@@ -15,15 +18,7 @@ class SimMap {
     // so that the country can conquer them in the next tick
     // this array has the feature, if any, of each pixel
     // A feature includes anything of strategic value, like a city or a farm
-    featureMatrix: string[][] = [['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
-                                 ['', 'arable', '', '', '', '', '', 'arable', ''], 
-                                 ['', 'arable', '', '', '', '', '', 'arable', ''], 
-                                 ['', 'arable', '', '', '', '', '', 'arable', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', ''], 
-                                 ['', '', '', '', '', '', '', '', '']];
+    featureMatrix: string[][] = Array.from({ length: 49 }, () => Array(49).fill(''));
     // this object maps the feature to the material symbol that will be drawn on the map
     featureMap: Record<string, p5.Image> = {};
 
@@ -33,9 +28,12 @@ class SimMap {
     };
 
     constructor(w: string, l: string, mapData: (string | Country)[][] , p: p5) {
+        
+        console.log('pixels array created: ', this.pixels);
         this.mapData = mapData;
 
         this.fillFeatureMap(p);
+        console.log('feature matrix: ', this.featureMatrix);
     };
 
     createMap(p: p5) {
@@ -48,10 +46,11 @@ class SimMap {
                 if (typeof(this.mapData[row][col]) === 'object') {
                     feature = 'city';
                 };
-                this.pixels[row].push(new MapPixel(this.mapData[row][col], row, col, this.size, feature, this));
+                this.pixels[row][col] = new MapPixel(this.mapData[row][col], row, col, this.size, feature, this);
                 console.log(`pixel created at ${row} ${col}`);
             };
         };
+        console.log('pixels: ', this.pixels);
     };
 
     findAvailable(country: { color: string, available: number[][] }, p: p5) {
@@ -60,16 +59,16 @@ class SimMap {
         for (let row = 0; row < this.mapData.length; row++) {
             for (let col = 0; col < this.mapData[row].length; col++) {
                 if (this.pixels[row][col].type === country.color) {
-                    if (this.pixels[p.constrain(row + 1, 0, 8)][col].type === '255, 255, 255') {
+                    if (this.pixels[p.constrain(row + 1, 0, this.mapData.length - 1)][col].type === '255, 255, 255') {
                         country.available.push([row + 1, col]);
                     };
-                    if (this.pixels[p.constrain(row - 1, 0, 8)][col].type === '255, 255, 255') {
+                    if (this.pixels[p.constrain(row - 1, 0, this.mapData.length - 1)][col].type === '255, 255, 255') {
                         country.available.push([row - 1, col]);
                     };
-                    if (this.pixels[row][p.constrain(col + 1, 0, 8)].type === '255, 255, 255') {
+                    if (this.pixels[row][p.constrain(col + 1, 0, this.mapData[row].length - 1)].type === '255, 255, 255') {
                         country.available.push([row, col + 1]);
                     };
-                    if (this.pixels[row][p.constrain(col - 1, 0, 8)].type === '255, 255, 255') {
+                    if (this.pixels[row][p.constrain(col - 1, 0, this.mapData[row].length - 1)].type === '255, 255, 255') {
                         country.available.push([row, col - 1]);
                     };
                 };
