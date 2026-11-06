@@ -8,39 +8,40 @@ import { cindercrest, nullEmpire, parrotCiv, law, nether, l, w } from './src/col
 const startingMapData = mapData;
 console.log(startingMapData);
 let simMap: SimMap;
-let materialSymbolsRounded: p5.Font;
 let testFontCOURIERPRIME: p5.Font;
 let testFontCOURIERPRIMEBold: p5.Font;
-let domainIcon: p5.Image;
 let isPaused = false;
 let fs = false;
 
 function sketch(p: p5) {
      p.setup = async () => {
+        /* GRAPHICS */
         p.createCanvas(980, 980, p.WEBGL);
+        p.frameRate(30);
+        p.noSmooth();
+
+        /* OBJECTS */
         simMap = new SimMap(w, l, startingMapData, p);
         simMap.createMap(p);
         console.log('doing p5 setup');
-        p.frameRate(30);
+
+        /* ASSETS */
         testFontCOURIERPRIME = await p.loadFont('./fonts/Courier Prime.ttf');
         testFontCOURIERPRIMEBold = await p.loadFont('./fonts/Courier Prime Bold.ttf');
-        domainIcon = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/src/social/domain/materialiconsround/24px.svg');
-        domainIcon.width = 24;
-        domainIcon.height = 24;
-        console.log(domainIcon.width, domainIcon.height);
 
+        /* BUTTONS */
         $('main:has(.p5Canvas)').append('<div id="buttonsContainer"></div>');
         $('main:has(.p5Canvas)').prepend('<div id="canvasContainer"></div>');
         $('#canvasContainer').append($('.p5Canvas')).css({height: '980px'});
-        // reset button
+        // Reset button
         const resetButton = p.createButton('Reset').class('resetButton controlButtons').mousePressed(() => {
             window.location.reload();
         });
-        // pause button
+        // Pause button
         const pauseButton = p.createButton('Pause').class('pauseButton controlButtons').mousePressed(() => {
             isPaused = !isPaused;
         });
-        // fullscreen button
+        // Fullscreen button
         const fullscreenButton = p.createButton('Fullscreen').class('fullscreenButton controlButtons').mousePressed(() => {
             if (fs === false) {
                 $('main').css({
@@ -83,10 +84,10 @@ function sketch(p: p5) {
 
     p.draw = () => {
         p.background(255, 255, 255);
-        // move origin to corner because webgl origin is center
+        // Move origin to corner because WebGL origin is center, but I want the origin to be in the corner
         p.translate(-0.5 * p.width, -0.5 * p.height);
         
-        // draw each pixel
+        // Draw each pixel
         for (let row = 0; row < simMap.mapData.length; row++) {
             for (let col = 0; col < simMap.mapData[row].length; col++) {
                 simMap.pixels[row][col].draw(p);
@@ -97,7 +98,7 @@ function sketch(p: p5) {
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
 
-        // game logic
+        // Game tick logic
         if (!isPaused) {
             simMap.update(p, cindercrest);
             simMap.update(p, nullEmpire);
@@ -110,4 +111,3 @@ function sketch(p: p5) {
 };
 
 new p5(sketch);
-export { cindercrest, nullEmpire, parrotCiv, law, nether, l, w };

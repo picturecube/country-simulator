@@ -1,3 +1,5 @@
+/* SETUP STUFF */
+
 import p5 from 'p5';
 import $ from 'jquery';
 import SimMap from './SimMap';
@@ -23,6 +25,8 @@ class MapPixel {
         
         console.log(`Map pixel constructor for ${type} ${x} ${y}`);
     };
+
+/* DRAW STUFF */
 
     draw(p: p5) {
         // separates the string color into 3 integers for p5 to use

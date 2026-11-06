@@ -1,9 +1,10 @@
 import p5 from 'p5';
 import SimMap from './SimMap';
+import constrain from './constrain.ts';
 function processMouse(p: p5, simMap: SimMap, font: p5.Font, bold: p5.Font) {
     /* divides the mouse coordinates by the size of each pixel to get the pixel coordinates, then constrains it to the map so if 
     the pointer is out of bounds, it just returns the nearest pixel */
-    let pixelHovered = simMap.pixels[p.constrain(p.floor(p.mouseY / simMap.size), 0, simMap.mapData.length - 1)][p.constrain(p.floor(p.mouseX / simMap.size), 0, simMap.mapData[0].length - 1)];
+    let pixelHovered = simMap.pixels[constrain(Math.floor(p.mouseY / simMap.size), 0, simMap.mapData.length - 1)][constrain(Math.floor(p.mouseX / simMap.size), 0, simMap.mapData[0].length - 1)];
     console.log(`pixel hovered: ${pixelHovered.x}, ${pixelHovered.y}, rgb(${pixelHovered.type}), ${pixelHovered.feature}`);
     p.textFont(font);
     p.textSize(12);
