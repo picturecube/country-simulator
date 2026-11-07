@@ -8,7 +8,7 @@ import constrain from "./constrain.ts";
 class SimMap {
     // The map is a 9x9 grid of pixels and each pixel is 100x100 px
     // The data is either the color or a country object with a color property
-    mapData: ( string | { color: string } )[][];
+    mapData: ( string | { color: string, colorMode: 'light' | 'dark' } )[][];
 
     /**/
 
@@ -87,6 +87,7 @@ class SimMap {
             for (let rsrc = 0; rsrc < usableResources; rsrc++) {
                 let conquerablePixel = country.available[Math.floor(Math.random() * country.available.length)];
                 this.pixels[conquerablePixel[0]][conquerablePixel[1]].type = country.color;
+                this.pixels[conquerablePixel[0]][conquerablePixel[1]].colorMode = country.colorMode;
             };
         } else {
             // Or if there are at least 5 resources and available land, build a city or farm
@@ -102,7 +103,7 @@ class SimMap {
                 // Check for bordering features and develop the feature into a suburb accordingly
                 let featureCandidate = ['city', 'arable'][Math.floor(Math.random() * 2)];
                 let borderingFeature = this.findBorderingFeature(featurePixel[0], featurePixel[1]);
-                if (borderingFeature !== '') {
+                if ((borderingFeature === 'arable' && featureCandidate !== 'arable') || (borderingFeature === 'city' && featureCandidate !== 'city')) {
                     featureCandidate = 'suburb';
                 };
                 this.pixels[featurePixel[0]][featurePixel[1]].feature = featureCandidate;
@@ -126,20 +127,38 @@ class SimMap {
                 const img = this.featureMap[feature];
                 if (!img) continue;
 
-                // The icons come black, so turn each pixel white
-                img.loadPixels();
-                for (let x = 0; x < img.width; x++) {
-                    for (let y = 0; y < img.height; y++) {
-                        const index = (x + y * img.width) * 4;
-                        const alpha = img.pixels[index + 3];
-                        if (alpha > 0) {
-                            img.pixels[index] = 255;
-                            img.pixels[index + 1] = 255;
-                            img.pixels[index + 2] = 255;
+                console.log('pixel data: ', this.pixels[row][col]);
+
+                if (this.pixels[row][col].colorMode === 'dark') {
+                    // The icons come black, so turn each pixel white if the color is dark
+                    img.loadPixels();
+                    for (let x = 0; x < img.width; x++) {
+                        for (let y = 0; y < img.height; y++) {
+                            const index = (x + y * img.width) * 4;
+                            const alpha = img.pixels[index + 3];
+                            if (alpha > 0) {
+                                img.pixels[index] = 255;
+                                img.pixels[index + 1] = 255;
+                                img.pixels[index + 2] = 255;
+                            };
                         };
                     };
+                    img.updatePixels();
+                } else if (this.pixels[row][col].colorMode === 'light') {
+                    img.loadPixels();
+                    for (let x = 0; x < img.width; x++) {
+                        for (let y = 0; y < img.height; y++) {
+                            const index = (x + y * img.width) * 4;
+                            const alpha = img.pixels[index + 3];
+                            if (alpha > 0) {
+                                img.pixels[index] = 0;
+                                img.pixels[index + 1] = 0;
+                                img.pixels[index + 2] = 0;
+                            };
+                        };
+                    };
+                    img.updatePixels();
                 };
-                img.updatePixels();
 
                 p.image(img, col * this.size, row * this.size, this.size, this.size);
             };

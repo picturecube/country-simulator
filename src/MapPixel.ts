@@ -9,13 +9,16 @@ class MapPixel {
     y: number;
     size: number;
     feature: string;
+    colorMode: 'light' | 'dark';
 
-    constructor(type: ({ color: string } | string), x: number, y: number, size: number, feature: string, map: SimMap) {
+    constructor(type: ({ color: string, colorMode: 'light' | 'dark' } | string), x: number, y: number, size: number, feature: string, map: SimMap) {
         // will accept both the variable l for land which is the string '255, 255, 255' or a country object cuz why not
         if (typeof(type) === 'object') {
             this.type = type.color;
+            this.colorMode = type.colorMode;
         } else {
             this.type = type;
+            this.colorMode = 'light';
         };
         this.x = x;
         this.y = y;

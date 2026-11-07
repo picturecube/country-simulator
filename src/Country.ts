@@ -11,12 +11,14 @@ class Country {
     color: string;
     available: number[][];
     resources: number;
+    colorMode: 'light' | 'dark';
 
-    constructor(name: string, color: string) {
+    constructor(name: string, color: string, colorMode: 'light' | 'dark') {
         this.name = name;
         this.color = color;
         this.available = [];
         this.resources = 10;
+        this.colorMode = colorMode;
     };
 };
 
