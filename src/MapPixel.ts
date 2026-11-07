@@ -25,8 +25,6 @@ class MapPixel {
         this.size = size;
         this.feature = feature;
         map.featureMatrix[this.x][this.y] = this.feature;
-        
-        console.log(`Map pixel constructor for ${type} ${x} ${y}`);
     };
 
 /* DRAW STUFF */

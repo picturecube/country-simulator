@@ -6,7 +6,6 @@ import mapData from './src/mapData.ts';
 import { cindercrest, nullEmpire, parrotCiv, law, nether, l, w } from './src/colorData.ts';
 
 const startingMapData = mapData;
-console.log(startingMapData);
 let simMap: SimMap;
 let testFontCOURIERPRIME: p5.Font;
 let testFontCOURIERPRIMEBold: p5.Font;
@@ -19,11 +18,9 @@ function sketch(p: p5) {
         p.createCanvas(980, 980, p.WEBGL);
         p.frameRate(30);
         p.noSmooth();
-
         /* OBJECTS */
         simMap = new SimMap(w, l, startingMapData, p);
         simMap.createMap(p);
-        console.log('doing p5 setup');
 
         /* ASSETS */
         testFontCOURIERPRIME = await p.loadFont('./fonts/Courier Prime.ttf');
@@ -105,7 +102,6 @@ function sketch(p: p5) {
             simMap.update(p, parrotCiv);
             simMap.update(p, law);
             simMap.update(p, nether);
-            console.log(cindercrest, nullEmpire, parrotCiv, law, nether);
         };
     };
 };

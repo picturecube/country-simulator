@@ -28,17 +28,12 @@ class SimMap {
     };
 
     constructor(w: string, l: string, mapData: (string | Country)[][] , p: p5) {
-        
-        console.log('pixels array created: ', this.pixels);
         this.mapData = mapData;
 
         this.fillFeatureMap(p);
-        console.log('feature matrix: ', this.featureMatrix);
     };
 
     createMap(p: p5) {
-        console.log('creating map')
-        console.log(this.mapData)
         // Create a pixel object for each pixel
         for (let row = 0; row < this.mapData.length; row++) {
             for (let col = 0; col < this.mapData[row].length; col++) {
@@ -47,10 +42,8 @@ class SimMap {
                     feature = 'capital';
                 };
                 this.pixels[row][col] = new MapPixel(this.mapData[row][col], row, col, this.size, feature, this);
-                console.log(`pixel created at ${row} ${col}`);
             };
         };
-        console.log('pixels: ', this.pixels);
     };
 
 /* DRAW STUFF */
@@ -95,7 +88,6 @@ class SimMap {
             if (usableResources > 5 && this.pixels.some(row => row.some(pixel => pixel.type === country.color && pixel.feature === ''))) {
                 // Find a good pixel to become a feature
                 let featurePixel = [constrain(Math.floor(Math.random() * this.pixels.length), 0, this.pixels.length - 1), 0];
-                console.log(featurePixel, this.pixels[featurePixel[0]])
                 featurePixel[1] = constrain(Math.floor(Math.random() * this.pixels[featurePixel[0]].length), 0, this.pixels[featurePixel[0]].length - 1);
                 while (this.pixels[featurePixel[0]][featurePixel[1]].type !== country.color || this.pixels[featurePixel[0]][featurePixel[1]].feature !== '') {
                     featurePixel = [constrain(Math.floor(Math.random() * this.pixels.length), 0, this.pixels.length - 1), constrain(Math.floor(Math.random() * this.pixels[0].length), 0, this.pixels[0].length - 1)];
@@ -118,7 +110,6 @@ class SimMap {
 
     drawFeatureSymbols(p: p5) {
         // Add symbol for each feature
-        console.log(this.featureMatrix);
         for (let row = 0; row < this.featureMatrix.length; row++) {
             for (let col = 0; col < this.featureMatrix[row].length; col++) {
                 const feature = this.featureMatrix[row][col];
@@ -126,8 +117,6 @@ class SimMap {
 
                 const img = this.featureMap[feature];
                 if (!img) continue;
-
-                console.log('pixel data: ', this.pixels[row][col]);
 
                 if (this.pixels[row][col].colorMode === 'dark') {
                     // The icons come black, so turn each pixel white if the color is dark
