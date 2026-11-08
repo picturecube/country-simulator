@@ -11,13 +11,19 @@ let testFontCOURIERPRIME: p5.Font;
 let testFontCOURIERPRIMEBold: p5.Font;
 let isPaused = false;
 let fs = false;
+const canvasSize = window.innerHeight;
+
+let featuresBuffer: p5.Graphics
 
 function sketch(p: p5) {
      p.setup = async () => {
         /* GRAPHICS */
-        p.createCanvas(980, 980, p.WEBGL);
-        p.frameRate(30);
+        p.createCanvas(canvasSize, canvasSize, p.WEBGL);
+        p.frameRate(15);
         p.noSmooth();
+        featuresBuffer = p.createGraphics(canvasSize, canvasSize);
+        featuresBuffer.pixelDensity(1);
+
         /* OBJECTS */
         simMap = new SimMap(w, l, startingMapData, p);
         simMap.createMap(p);
@@ -29,7 +35,7 @@ function sketch(p: p5) {
         /* BUTTONS */
         $('main:has(.p5Canvas)').append('<div id="buttonsContainer"></div>');
         $('main:has(.p5Canvas)').prepend('<div id="canvasContainer"></div>');
-        $('#canvasContainer').append($('.p5Canvas')).css({height: '980px'});
+        $('#canvasContainer').append($('.p5Canvas')).css({height: `${canvasSize}px`});
         // Reset button
         const resetButton = p.createButton('Reset').class('resetButton controlButtons').mousePressed(() => {
             window.location.reload();
@@ -43,7 +49,6 @@ function sketch(p: p5) {
             if (fs === false) {
                 $('main').css({
                     width: '90vw',
-                    height: '100vh',
                     objectFit: 'contain'
                 });
                 $('canvas').css({
@@ -51,24 +56,17 @@ function sketch(p: p5) {
                     width: '100vh',
                     objectFit: 'contain'
                 });
-                $('#canvasContainer').css({
-                    height: '100vh'
-                });
                 fs = true;
                 $('main')[0].requestFullscreen();
             } else if (fs === true) {
                 $('main').css({
                     width: '',
-                    height: '',
                     objectFit: ''
                 });
                 $('canvas').css({
                     height: '',
                     width: '',
                     objectFit: ''
-                });
-                $('#canvasContainer').css({
-                    height: '980px'
                 });
                 fs = false;
                 document.exitFullscreen();
@@ -91,7 +89,9 @@ function sketch(p: p5) {
             };
         };
 
-        simMap.drawFeatureSymbols(p);
+        featuresBuffer.clear();
+        simMap.drawFeatureSymbols(featuresBuffer);
+        p.image(featuresBuffer, 0, 0)
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
 

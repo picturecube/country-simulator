@@ -12,7 +12,7 @@ class SimMap {
 
     /**/
 
-    size = 20;
+    size: number;
     // The pixel objects are stored in a separate array because they are for displaying the map only
     pixels: MapPixel[][] = Array.from({ length: 49 }, () => Array(49).fill(null));
     // This array has the feature, if any, of each pixel.
@@ -29,6 +29,7 @@ class SimMap {
 
     constructor(w: string, l: string, mapData: (string | Country)[][] , p: p5) {
         this.mapData = mapData;
+        this.size = p.height / this.mapData.length
 
         this.fillFeatureMap(p);
     };
@@ -108,7 +109,7 @@ class SimMap {
         country.resources += Math.max(Math.floor(4 * usableResources / 3), 0);
     };
 
-    drawFeatureSymbols(p: p5) {
+    drawFeatureSymbols(p: p5.Graphics) {
         // Add symbol for each feature
         for (let row = 0; row < this.featureMatrix.length; row++) {
             for (let col = 0; col < this.featureMatrix[row].length; col++) {
