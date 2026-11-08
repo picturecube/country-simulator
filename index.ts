@@ -95,7 +95,7 @@ function sketch(p: p5) {
         p.image(featuresBuffer, 0, 0)
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
-        const speed = 20;
+        const speed = 1;
         // Game tick logic
         if (!isPaused) {
             for (let x = 0; x < speed; x++) {
