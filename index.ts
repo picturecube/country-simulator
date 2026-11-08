@@ -4,6 +4,7 @@ import $ from 'jquery';
 import processMouse from './src/processMouse.ts';
 import mapData from './src/mapData.ts';
 import { cindercrest, nullEmpire, parrotCiv, law, nether, l, w } from './src/colorData.ts';
+import Perlin from './src/perlin.ts';
 
 const startingMapData = mapData;
 let simMap: SimMap;
@@ -12,7 +13,7 @@ let testFontCOURIERPRIMEBold: p5.Font;
 let isPaused = false;
 let fs = false;
 const canvasSize = window.innerHeight;
-
+const featureNoise = new Perlin(Math.random());
 let featuresBuffer: p5.Graphics
 
 function sketch(p: p5) {
@@ -94,14 +95,16 @@ function sketch(p: p5) {
         p.image(featuresBuffer, 0, 0)
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
-
+        const speed = 20;
         // Game tick logic
         if (!isPaused) {
-            simMap.update(p, cindercrest);
-            simMap.update(p, nullEmpire);
-            simMap.update(p, parrotCiv);
-            simMap.update(p, law);
-            simMap.update(p, nether);
+            for (let x = 0; x < speed; x++) {
+                simMap.update(p, cindercrest, featureNoise);
+                simMap.update(p, nullEmpire, featureNoise);
+                simMap.update(p, parrotCiv, featureNoise);
+                simMap.update(p, law, featureNoise);
+                simMap.update(p, nether, featureNoise);
+            };
         };
     };
 };

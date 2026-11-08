@@ -4,6 +4,7 @@ import p5 from 'p5';
 import MapPixel from './MapPixel.ts'
 import Country from './Country.ts';
 import constrain from "./constrain.ts";
+import Perlin from './perlin.ts';
 
 class SimMap {
     // The map is a 9x9 grid of pixels and each pixel is 100x100 px
@@ -72,7 +73,7 @@ class SimMap {
         };
     };
 
-    update(p: p5, country: Country) {
+    update(p: p5, country: Country, noise: Perlin) {
         this.findAvailable(country, p);
         // Each tick, each country will only use about a third of its resources, rounded down, and won't "mobilize" more resources than available land
         let usableResources: number = constrain(Math.floor(country.resources / 3), 0, country.available.length);
@@ -94,11 +95,16 @@ class SimMap {
                     featurePixel = [constrain(Math.floor(Math.random() * this.pixels.length), 0, this.pixels.length - 1), constrain(Math.floor(Math.random() * this.pixels[0].length), 0, this.pixels[0].length - 1)];
                 }
                 // Check for bordering features and develop the feature into a suburb accordingly
-                let featureCandidate = ['city', 'arable'][Math.floor(Math.random() * 2)];
-                let borderingFeature = this.findBorderingFeature(featurePixel[0], featurePixel[1]);
-                if ((borderingFeature === 'arable' && featureCandidate !== 'arable') || (borderingFeature === 'city' && featureCandidate !== 'city')) {
+                let featureCandidate: string;
+                const scale = 1
+                if (p.noise(featurePixel[0] * scale, featurePixel[1] * scale) < 0.6) {
+                    featureCandidate = 'arable';
+                } else if (p.noise(featurePixel[0] * scale, featurePixel[1] * scale) < 0.7) {
                     featureCandidate = 'suburb';
+                } else {
+                    featureCandidate = 'city';
                 };
+                console.log(p.noise(featurePixel[0] * scale, featurePixel[1] * scale));
                 this.pixels[featurePixel[0]][featurePixel[1]].feature = featureCandidate;
                 this.featureMatrix[featurePixel[0]][featurePixel[1]] = this.pixels[featurePixel[0]][featurePixel[1]].feature;
                 country.resources -= usableResources;
@@ -167,12 +173,12 @@ class SimMap {
         for (let [row, col] of neighbors) {
             if (row >= 0 && row < this.pixels.length && col >= 0 && col < this.pixels[0].length) {
                 feature = this.pixels[row][col].feature;
-                if (feature === 'city' || feature === 'capital') {
+                if (feature === 'arable') {
                     return feature;
                 }
             }
         }
-        if (feature === 'arable') {
+        if (feature === 'city' || feature === 'capital' || feature === 'suburb') {
             return feature;
         }
         return '';
