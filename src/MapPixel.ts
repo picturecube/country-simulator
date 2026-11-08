@@ -1,8 +1,8 @@
 /* SETUP STUFF */
 
 import p5 from 'p5';
-import $ from 'jquery';
 import SimMap from './SimMap';
+import Country from './Country.ts';
 class MapPixel {
     type: string;
     x: number;
@@ -11,7 +11,7 @@ class MapPixel {
     feature: string;
     colorMode: 'light' | 'dark';
 
-    constructor(type: ({ color: string, colorMode: 'light' | 'dark' } | string), x: number, y: number, size: number, feature: string, map: SimMap) {
+    constructor(type: Country | string, x: number, y: number, size: number, feature: string, map: SimMap) {
         // will accept both the variable l for land which is the string '255, 255, 255' or a country object cuz why not
         if (typeof(type) === 'object') {
             this.type = type.color;

@@ -9,7 +9,7 @@ import Perlin from './perlin.ts';
 class SimMap {
     // The map is a 9x9 grid of pixels and each pixel is 100x100 px
     // The data is either the color or a country object with a color property
-    mapData: ( string | { color: string, colorMode: 'light' | 'dark' } )[][];
+    mapData: ( string | Country )[][];
 
     /**/
 
@@ -20,12 +20,12 @@ class SimMap {
     // A feature includes anything of strategic value, like a city or a farm
     featureMatrix: string[][] = Array.from({ length: 49 }, () => Array(49).fill(''));
     // This object maps the feature to the material symbol that will be drawn on the map
-    featureMap: Record<string, p5.Image> = {};
+    featureMap: Record<string, p5.Image[]> = {};
     async fillFeatureMap(p: p5) {
-        this.featureMap.city = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/domain/materialsymbolsrounded/domain_48px.svg');
-        this.featureMap.arable = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/agriculture/materialsymbolsrounded/agriculture_48px.svg');
-        this.featureMap.capital = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/stars/materialsymbolsrounded/stars_48px.svg');
-        this.featureMap.suburb = await p.loadImage('https://raw.githubusercontent.com/google/material-design-icons/refs/heads/master/symbols/web/location_city/materialsymbolsrounded/location_city_48px.svg');
+        this.featureMap.city = [await p.loadImage('../assets/domain_48px-light.svg'), await p.loadImage('../assets/domain_48px-dark.svg')];
+        this.featureMap.arable = [await p.loadImage('../assets/agriculture_48px-light.svg'), await p.loadImage('../assets/agriculture_48px-dark.svg')];
+        this.featureMap.capital = [await p.loadImage('../assets/stars_48px-light.svg'), await p.loadImage('../assets/stars_48px-dark.svg')];
+        this.featureMap.suburb = [await p.loadImage('../assets/location_city_48px-light.svg'), await p.loadImage('../assets/location_city_48px-dark.svg')];
     };
 
     constructor(w: string, l: string, mapData: (string | Country)[][] , p: p5) {
@@ -104,7 +104,6 @@ class SimMap {
                 } else {
                     featureCandidate = 'city';
                 };
-                console.log(p.noise(featurePixel[0] * scale, featurePixel[1] * scale));
                 this.pixels[featurePixel[0]][featurePixel[1]].feature = featureCandidate;
                 this.featureMatrix[featurePixel[0]][featurePixel[1]] = this.pixels[featurePixel[0]][featurePixel[1]].feature;
                 country.resources -= usableResources;
@@ -122,39 +121,7 @@ class SimMap {
                 const feature = this.featureMatrix[row][col];
                 if (!feature) continue;
 
-                const img = this.featureMap[feature];
-                if (!img) continue;
-
-                if (this.pixels[row][col].colorMode === 'dark') {
-                    // The icons come black, so turn each pixel white if the color is dark
-                    img.loadPixels();
-                    for (let x = 0; x < img.width; x++) {
-                        for (let y = 0; y < img.height; y++) {
-                            const index = (x + y * img.width) * 4;
-                            const alpha = img.pixels[index + 3];
-                            if (alpha > 0) {
-                                img.pixels[index] = 255;
-                                img.pixels[index + 1] = 255;
-                                img.pixels[index + 2] = 255;
-                            };
-                        };
-                    };
-                    img.updatePixels();
-                } else if (this.pixels[row][col].colorMode === 'light') {
-                    img.loadPixels();
-                    for (let x = 0; x < img.width; x++) {
-                        for (let y = 0; y < img.height; y++) {
-                            const index = (x + y * img.width) * 4;
-                            const alpha = img.pixels[index + 3];
-                            if (alpha > 0) {
-                                img.pixels[index] = 0;
-                                img.pixels[index + 1] = 0;
-                                img.pixels[index + 2] = 0;
-                            };
-                        };
-                    };
-                    img.updatePixels();
-                };
+                const img = this.featureMap[feature][this.pixels[row][col].colorMode === 'dark' ? 1 : 0];
 
                 p.image(img, col * this.size, row * this.size, this.size, this.size);
             };

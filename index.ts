@@ -19,8 +19,8 @@ let featuresBuffer: p5.Graphics
 function sketch(p: p5) {
      p.setup = async () => {
         /* GRAPHICS */
-        p.createCanvas(canvasSize, canvasSize, p.WEBGL);
-        p.frameRate(15);
+        const canvas = p.createCanvas(canvasSize, canvasSize, p.WEBGL);
+        p.frameRate(20);
         p.noSmooth();
         featuresBuffer = p.createGraphics(canvasSize, canvasSize);
         featuresBuffer.pixelDensity(1);
