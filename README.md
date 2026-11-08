@@ -1,6 +1,6 @@
 # Country Simulator
 
-(i didn't have a creative name for this)
+(i didn't have a creative name for this)  
 **This is a political simulator built with Node.js and p5.js showing how land and politics affects the world**
 
 ## How to use
@@ -15,10 +15,10 @@
 
 ## Credits
 
-**Google** for Material Icons
-**Jason Lee** for zero-md
-**Processing** for p5.js
-**JQuery** for JQuery
-**Microsoft** for TypeScript
-**Vite** for Vite
-**picturecube** (me) for everything else
+**Google** for Material Icons  
+**Jason Lee** for zero-md  
+**Processing** for p5.js  
+**JQuery** for JQuery  
+**Microsoft** for TypeScript  
+**Vite** for Vite  
+**picturecube** (me) for everything else  
