@@ -10,6 +10,7 @@ class MapPixel {
     size: number;
     feature: string;
     colorMode: 'light' | 'dark';
+    population: number;
 
     constructor(type: Country | string, x: number, y: number, size: number, feature: string, map: SimMap) {
         // will accept both the variable l for land which is the string '255, 255, 255' or a country object cuz why not
@@ -24,7 +25,11 @@ class MapPixel {
         this.y = y;
         this.size = size;
         this.feature = feature;
-        map.featureMatrix[this.x][this.y] = this.feature;
+        if (this.feature === 'capital') {
+            this.population = 10000;
+        } else {
+            this.population = 0;
+        };
     };
 
 /* DRAW STUFF */

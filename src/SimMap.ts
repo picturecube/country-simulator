@@ -16,9 +16,6 @@ class SimMap {
     size: number;
     // The pixel objects are stored in a separate array because they are for displaying the map only
     pixels: MapPixel[][] = Array.from({ length: 49 }, () => Array(49).fill(null));
-    // This array has the feature, if any, of each pixel.
-    // A feature includes anything of strategic value, like a city or a farm
-    featureMatrix: string[][] = Array.from({ length: 49 }, () => Array(49).fill(''));
     // This object maps the feature to the material symbol that will be drawn on the map
     featureMap: Record<string, p5.Image[]> = {};
     async fillFeatureMap(p: p5) {
@@ -28,7 +25,7 @@ class SimMap {
         this.featureMap.suburb = [await p.loadImage('../assets/location_city_48px-light.svg'), await p.loadImage('../assets/location_city_48px-dark.svg')];
     };
 
-    constructor(w: string, l: string, mapData: (string | Country)[][] , p: p5) {
+    constructor(w: string, l: string, mapData: (string | Country)[][], p: p5) {
         this.mapData = mapData;
         this.size = p.height / this.mapData.length
 
@@ -39,7 +36,7 @@ class SimMap {
         // Create a pixel object for each pixel
         for (let row = 0; row < this.mapData.length; row++) {
             for (let col = 0; col < this.mapData[row].length; col++) {
-                let feature = this.featureMatrix[row][col];
+                let feature = '';
                 if (typeof(this.mapData[row][col]) === 'object') {
                     feature = 'capital';
                 };
@@ -96,17 +93,29 @@ class SimMap {
                 }
                 // Check for bordering features and develop the feature into a suburb accordingly
                 let featureCandidate: string;
+                let population: number;
                 const scale = 1
                 if (p.noise(featurePixel[0] * scale, featurePixel[1] * scale) < 0.6) {
                     featureCandidate = 'arable';
+                    population = 100;
                 } else if (p.noise(featurePixel[0] * scale, featurePixel[1] * scale) < 0.7) {
                     featureCandidate = 'suburb';
+                    population = 1000;
                 } else {
                     featureCandidate = 'city';
+                    population = 10000;
                 };
                 this.pixels[featurePixel[0]][featurePixel[1]].feature = featureCandidate;
-                this.featureMatrix[featurePixel[0]][featurePixel[1]] = this.pixels[featurePixel[0]][featurePixel[1]].feature;
                 country.resources -= usableResources;
+
+                // increase the population per pixel by 2.2
+                for (let row = 0; row < this.mapData.length; row++) {
+                    for (let col = 0; col < this.mapData.length; col++) {
+                        if (this.pixels[row][col].type === country.color) {
+                            this.pixels[row][col].population *= 2.2;
+                        };
+                    };
+                };
             };
         };
         // Add 4/3 of the resources it just used because that makes sense (when i add more factors like economy this factor will change)
@@ -116,39 +125,15 @@ class SimMap {
 
     drawFeatureSymbols(p: p5.Graphics) {
         // Add symbol for each feature
-        for (let row = 0; row < this.featureMatrix.length; row++) {
-            for (let col = 0; col < this.featureMatrix[row].length; col++) {
-                const feature = this.featureMatrix[row][col];
-                if (!feature) continue;
-
+        for (let row = 0; row < this.pixels.length; row++) {
+            for (let col = 0; col < this.pixels[row].length; col++) {
+                const feature = this.pixels[row][col].feature;
+                // Skip pixels without features and only draw if the selected feature has already been loaded
+                if (feature === '' || !this.featureMap[feature]) continue
                 const img = this.featureMap[feature][this.pixels[row][col].colorMode === 'dark' ? 1 : 0];
-
                 p.image(img, col * this.size, row * this.size, this.size, this.size);
             };
         };
-    };
-
-    findBorderingFeature(row: number, col: number) {
-        // Check the four adjacent pixels for bordering features
-        const neighbors = [
-            [row - 1, col],
-            [row + 1, col],
-            [row, col - 1],
-            [row, col + 1]
-        ];
-        let feature = '';
-        for (let [row, col] of neighbors) {
-            if (row >= 0 && row < this.pixels.length && col >= 0 && col < this.pixels[0].length) {
-                feature = this.pixels[row][col].feature;
-                if (feature === 'arable') {
-                    return feature;
-                }
-            }
-        }
-        if (feature === 'city' || feature === 'capital' || feature === 'suburb') {
-            return feature;
-        }
-        return '';
     };
 };
 
