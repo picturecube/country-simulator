@@ -12,7 +12,7 @@ class MapPixel {
     colorMode: 'light' | 'dark';
     population: number;
 
-    constructor(type: Country | string, x: number, y: number, size: number, feature: string, map: SimMap) {
+    constructor(type: Country | string, x: number, y: number, size: number, feature: string) {
         // will accept both the variable l for land which is the string '255, 255, 255' or a country object cuz why not
         if (typeof(type) === 'object') {
             this.type = type.color;

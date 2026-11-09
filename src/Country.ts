@@ -1,3 +1,4 @@
+import Troop from './Troop.ts'
 
 /* Resources: each pixel conquered consumes 1 resource
 and each tick each country will use 1/3 of the resources it has, rounded down. 
@@ -11,6 +12,8 @@ class Country {
     color: string;
     available: number[][];
     resources: number;
+    troops = Array.from(Array(10), (x) => new Troop);
+    food_surplus: number;
     colorMode: 'light' | 'dark';
 
     constructor(name: string, color: string, colorMode: 'light' | 'dark') {
@@ -19,6 +22,7 @@ class Country {
         this.available = [];
         this.resources = 10;
         this.colorMode = colorMode;
+        this.food_surplus = 0;
     };
 };
 

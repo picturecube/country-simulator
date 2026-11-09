@@ -27,7 +27,7 @@ class SimMap {
 
     constructor(w: string, l: string, mapData: (string | Country)[][], p: p5) {
         this.mapData = mapData;
-        this.size = p.height / this.mapData.length
+        this.size = p.height / this.mapData.length;
 
         this.fillFeatureMap(p);
     };
@@ -40,7 +40,7 @@ class SimMap {
                 if (typeof(this.mapData[row][col]) === 'object') {
                     feature = 'capital';
                 };
-                this.pixels[row][col] = new MapPixel(this.mapData[row][col], row, col, this.size, feature, this);
+                this.pixels[row][col] = new MapPixel(this.mapData[row][col], row, col, this.size, feature);
             };
         };
     };
@@ -120,7 +120,7 @@ class SimMap {
         };
         // Add 4/3 of the resources it just used because that makes sense (when i add more factors like economy this factor will change)
         country.resources -= usableResources;
-        country.resources += Math.max(Math.floor(4 * usableResources / 3), 0);
+        country.resources += Math.round(Math.max(Math.floor(4 * usableResources / 3), 0));
     };
 
     drawFeatureSymbols(p: p5.Graphics) {
