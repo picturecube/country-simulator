@@ -14,8 +14,8 @@ let isPaused = false;
 let isFullscreen = false;
 const canvasSize = window.innerHeight;
 const featureNoise = new Perlin(Math.random());
-let featuresBuffer: p5.Graphics
-const targetFrameRate = 30
+let featuresBuffer: p5.Graphics;
+const targetFrameRate = 18;
 
 function sketch(p: p5) {
      p.setup = async () => {
