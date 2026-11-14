@@ -11,16 +11,17 @@ let simMap: SimMap;
 let testFontCOURIERPRIME: p5.Font;
 let testFontCOURIERPRIMEBold: p5.Font;
 let isPaused = false;
-let fs = false;
+let isFullscreen = false;
 const canvasSize = window.innerHeight;
 const featureNoise = new Perlin(Math.random());
 let featuresBuffer: p5.Graphics
+const targetFrameRate = 30
 
 function sketch(p: p5) {
      p.setup = async () => {
         /* GRAPHICS */
         const canvas = p.createCanvas(canvasSize, canvasSize, p.WEBGL);
-        p.frameRate(20);
+        p.frameRate(targetFrameRate);
         p.noSmooth();
         featuresBuffer = p.createGraphics(canvasSize, canvasSize);
         featuresBuffer.pixelDensity(1);
@@ -47,7 +48,7 @@ function sketch(p: p5) {
         });
         // Fullscreen button
         const fullscreenButton = p.createButton('Fullscreen').class('fullscreenButton controlButtons').mousePressed(() => {
-            if (fs === false) {
+            if (isFullscreen === false) {
                 $('main').css({
                     width: '90vw',
                     objectFit: 'contain'
@@ -57,9 +58,9 @@ function sketch(p: p5) {
                     width: '100vh',
                     objectFit: 'contain'
                 });
-                fs = true;
+                isFullscreen = true;
                 $('main')[0].requestFullscreen();
-            } else if (fs === true) {
+            } else if (isFullscreen === true) {
                 $('main').css({
                     width: '',
                     objectFit: ''
@@ -69,7 +70,7 @@ function sketch(p: p5) {
                     width: '',
                     objectFit: ''
                 });
-                fs = false;
+                isFullscreen = false;
                 document.exitFullscreen();
             }
         });
@@ -96,14 +97,16 @@ function sketch(p: p5) {
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
         const speed = 1;
+        const tickRate = 20;
+        const framesPerTick = targetFrameRate / tickRate;
         // Game tick logic
-        if (!isPaused) {
+        if (!isPaused && (p.frameCount % framesPerTick === 0)) {
             for (let x = 0; x < speed; x++) {
-                simMap.update(p, cindercrest, featureNoise);
-                simMap.update(p, nullEmpire, featureNoise);
-                simMap.update(p, parrotCiv, featureNoise);
-                simMap.update(p, law, featureNoise);
-                simMap.update(p, nether, featureNoise);
+                simMap.update(p, cindercrest);
+                simMap.update(p, nullEmpire);
+                simMap.update(p, parrotCiv);
+                simMap.update(p, law);
+                simMap.update(p, nether);
             };
         };
     };

@@ -79,19 +79,34 @@ class SimMap {
         };
     };
 
-    update(p: p5, country: Country, noise: Perlin) {
-        this.findAvailable(country, p);
+    update(p: p5, country: Country) {
+
         // Each tick, each country will use its troops to conquer free land
         let usableTroops: number = constrain(country.troops.length, 0, country.available.length);
+
+        // Deactivate the older used troops if needed
+        for (let trp = 0; trp < usableTroops; trp++) {
+            let activatedTroop: undefined | ActiveTroop = country.troops[0];
+            if (typeof activatedTroop === 'object' && activatedTroop.food < activatedTroop.population) {
+                usableTroops -= 1;
+                country.troops.shift();
+                let deactivatedTroop = new InactiveTroop(activatedTroop.population, activatedTroop.food - activatedTroop.population);
+                country.inactiveTroops.push(deactivatedTroop);
+            };
+        };
+
+        this.findAvailable(country, p);
         let usableResources: number = 0;
         // Conquer a random pixel of available land (later i will add strategic assets)
         if (usableTroops > 0) {
             for (let trp = 0; trp < usableTroops; trp++) {
-                let conquerablePixelIdx = Math.floor(Math.random() * country.available.length);
-                let conquerablePixel = country.available[conquerablePixelIdx];
-                this.pixels[conquerablePixel[0]][conquerablePixel[1]].type = country.color;
-                this.pixels[conquerablePixel[0]][conquerablePixel[1]].colorMode = country.colorMode;
-                country.available.splice(conquerablePixelIdx, 1);
+                if (country.available.length > 0) {
+                        let conquerablePixelIdx = Math.floor(Math.random() * country.available.length);
+                        let conquerablePixel = country.available[conquerablePixelIdx];
+                        this.pixels[conquerablePixel[0]][conquerablePixel[1]].type = country.color;
+                        this.pixels[conquerablePixel[0]][conquerablePixel[1]].colorMode = country.colorMode;
+                        country.available.splice(conquerablePixelIdx, 1);
+                }
             };
         } else {
             // Or if there are at least 5 resources and available land, build a city or farm
@@ -131,21 +146,11 @@ class SimMap {
                 };
             };
         };
-
-        // Deactivate the used troops
-        for (let trp = 0; trp < usableTroops; trp++) {
-            let activatedTroop: undefined | ActiveTroop = country.troops.shift();
-            if (typeof activatedTroop === 'object') {
-                let deactivatedTroop = new InactiveTroop(activatedTroop.population, activatedTroop.food - activatedTroop.population);
-                country.inactiveTroops.push(deactivatedTroop);
-            };
-        };
         
         // Add 4/3 of the resources it just used because that makes sense (when i add more factors like economy this factor will change)
         country.resources += Math.round(Math.max(Math.floor(6 * usableResources / 5), 0));
 
         // add 50 food to surplus food count per arable land
-
         for (let row = 0; row < this.mapData.length; row++) {
             for (let col = 0; col < this.mapData[row].length; col++) {
                 if (this.pixels[row][col].type === country.color && this.pixels[row][col].feature === 'arable') {
@@ -155,8 +160,6 @@ class SimMap {
         }
 
         // give food surplus to troops that need it
-
-        
         for (let food = 0; food < country.food_surplus; food++) {
             if (country.inactiveTroops.length >= 1) {
                 if (country.inactiveTroops[0].food === country.inactiveTroops[0].population) {
