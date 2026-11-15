@@ -12,6 +12,7 @@ let testFontCOURIERPRIME: p5.Font;
 let testFontCOURIERPRIMEBold: p5.Font;
 let isPaused = false;
 let isFullscreen = false;
+let tick = 0;
 const canvasSize = window.innerHeight;
 const featureNoise = new Perlin(Math.random());
 let featuresBuffer: p5.Graphics;
@@ -96,11 +97,13 @@ function sketch(p: p5) {
         p.image(featuresBuffer, 0, 0)
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
+        tick++;
         const speed = 1;
         const tickRate = 20;
-        const framesPerTick = targetFrameRate / tickRate;
+        const mspt = 1000 / tickRate;
+        const ms = Math.floor(p.millis());
         // Game tick logic
-        if (!isPaused && (p.frameCount % framesPerTick === 0)) {
+        if (!isPaused && (ms / mspt > tick)) {
             for (let x = 0; x < speed; x++) {
                 simMap.update(p, cindercrest);
                 simMap.update(p, nullEmpire);
