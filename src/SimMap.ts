@@ -12,8 +12,6 @@ class SimMap {
     // The data is either the color or a country object with a color property
     mapData: ( string | Country )[][];
 
-    /**/
-
     size: number;
     // The pixel objects are stored in a separate array because they are for displaying the map only
     pixels: MapPixel[][] = Array.from({ length: 49 }, () => Array(49).fill(null));
