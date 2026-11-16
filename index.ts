@@ -17,11 +17,12 @@ const canvasSize = window.innerHeight;
 const featureNoise = new Perlin(Math.random());
 let featuresBuffer: p5.Graphics;
 const targetFrameRate = 18;
+let speedDisplay = 1;
 
 function sketch(p: p5) {
      p.setup = async () => {
         /* GRAPHICS */
-        const canvas = p.createCanvas(canvasSize, canvasSize, p.WEBGL);
+        p.createCanvas(canvasSize, canvasSize, p.WEBGL);
         p.frameRate(targetFrameRate);
         p.noSmooth();
         featuresBuffer = p.createGraphics(canvasSize, canvasSize);
@@ -75,15 +76,24 @@ function sketch(p: p5) {
                 document.exitFullscreen();
             }
         });
+        // Speed slider
+        const speedSlider = p.createSlider(1, 10, 1, 1).class('speedSlider controlButtons');
         $('#buttonsContainer').append($('.resetButton'));
         $('#buttonsContainer').append($('.pauseButton'));
         $('#buttonsContainer').append($('.fullscreenButton'));
+        $('#buttonsContainer').append($('<div id="speedContainer"></div>'))
+        $('#speedContainer').append($(`<p id="iShowSpeed">Speed: ${speedDisplay}x</p>`));
+        $('#speedContainer').append($('.speedSlider'))
     };
 
     p.draw = () => {
         p.background(255, 255, 255);
         // Move origin to corner because WebGL origin is center, but I want the origin to be in the corner
         p.translate(-0.5 * p.width, -0.5 * p.height);
+
+        // Show speed
+        speedDisplay = $('.speedSlider').val();
+        $('#iShowSpeed').html(`Speed: ${speedDisplay}x`);
         
         // Draw each pixel
         for (let row = 0; row < simMap.mapData.length; row++) {
@@ -98,7 +108,7 @@ function sketch(p: p5) {
 
         processMouse(p, simMap, testFontCOURIERPRIME, testFontCOURIERPRIMEBold);
         tick++;
-        const speed = 1;
+        const speed = speedDisplay;
         const tickRate = 20;
         const mspt = 1000 / tickRate;
         const ms = Math.floor(p.millis());

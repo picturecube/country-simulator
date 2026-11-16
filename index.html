@@ -5,8 +5,11 @@
         <script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3?register"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=domain" />
         <style>
+
             body {
                 background-color: #0d1117;
+                color: #f8fafc;
+                font-family: 'Courier New', Courier, monospace;
                 margin: 0;
                 display: flex;
                 flex-direction: column;
@@ -38,11 +41,67 @@
                 display: flex;
                 flex-direction: column;
                 gap: 1rem;
+                text-align: center;
             }
 
             #defaultCanvas0 {
                 display: block;
             }
+
+            #iShowSpeed, .speedSlider {
+                margin: 0;
+                border-width: 0px;
+                line-height: 1;
+            }
+
+            .speedSlider {
+                appearance: none;
+                -webkit-appearance: none;
+                width: inherit;
+            }
+
+            .speedSlider::-webkit-slider-runnable-track {
+                background: #f8fafc;
+                height: 12px;
+                border-radius: 6px;
+            }
+
+            .speedSlider::-webkit-slider-thumb {
+                appearance: none;
+                -webkit-appearance: none;
+                background: #242a33;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                margin-top: -2px;
+            }
+
+            .speedSlider::-webkit-slider-thumb:hover {
+                background: #0d1117;
+                border-color: #242a33;
+                border-width: 1px;
+                border-style: solid;
+            }
+
+            .speedSlider::-moz-slider-thumb {
+                appearance: none;
+                background: #242a33;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                margin-top: -2px;
+            }
+
+            .speedSlider::-moz-slider-thumb:hover {
+                background: #242a33;
+            }
+
+            #speedContainer {
+                display: flex;
+                gap: 4px;
+                flex-direction: column;
+            }
+
         </style>
         <title>Country Simulator</title>
     </head>
