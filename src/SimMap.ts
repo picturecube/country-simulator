@@ -4,13 +4,15 @@ import p5 from 'p5';
 import MapPixel from './MapPixel.ts'
 import Country from './Country.ts';
 import constrain from "./constrain.ts";
-import Perlin from './perlin.ts';
-import { Troop, InactiveTroop, ActiveTroop } from './Troop.ts';
+import {InactiveTroop, ActiveTroop } from './Troop.ts';
+import * as lo from 'lodash';
 
 class SimMap {
     // The map is a 9x9 grid of pixels and each pixel is 100x100 px
     // The data is either the color or a country object with a color property
     mapData: ( string | Country )[][];
+
+    prevPixels: MapPixel[][];
 
     size: number;
     // The pixel objects are stored in a separate array because they are for displaying the map only
@@ -29,9 +31,7 @@ class SimMap {
         this.size = p.height / this.mapData.length;
 
         this.fillFeatureMap(p);
-    };
 
-    createMap(p: p5) {
         // Create a pixel object for each pixel
         for (let row = 0; row < this.mapData.length; row++) {
             for (let col = 0; col < this.mapData[row].length; col++) {
@@ -42,6 +42,8 @@ class SimMap {
                 this.pixels[row][col] = new MapPixel(this.mapData[row][col], row, col, this.size, feature);
             };
         };
+
+        this.prevPixels = this.pixels;
     };
 
 /* DRAW STUFF */

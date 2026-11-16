@@ -30,7 +30,6 @@ function sketch(p: p5) {
 
         /* OBJECTS */
         simMap = new SimMap(w, l, startingMapData, p);
-        simMap.createMap(p);
 
         /* ASSETS */
         testFontCOURIERPRIME = await p.loadFont('./fonts/Courier Prime.ttf');
